@@ -1,0 +1,40 @@
+#!/usr/bin/env pybricks-micropython
+
+from pybricks import ev3brick as brick
+from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
+                                 InfraredSensor, UltrasonicSensor, GyroSensor)
+from pybricks.parameters import (Port, Stop, Direction, Button, Color,
+                                 SoundFile, ImageFile, Align)
+from pybricks.tools import print, wait, StopWatch
+from pybricks.robotics import DriveBase
+
+sensor = GyroSensor(Port.S2)
+
+left_motor = Motor(Port.A)
+right_motor = Motor(Port.D)
+
+wheel_diameter = 56
+axle_track = 132
+
+slow = -250
+fast = -400
+
+robot = DriveBase (left_motor, right_motor, wheel_diameter, axle_track)
+while not Button.LEFT in brick.buttons():
+    print('waiting...')
+
+# Balancing code here...
+sensor.reset_angle(0)
+
+while True:
+    print(sensor.angle(), end = ' ')
+    if sensor.angle() < -10:
+        robot.drive(fast,0) 
+    elif sensor.angle() < -2:
+        robot.drive(slow,0)
+    elif sensor.angle() > 10:
+        robot.drive(-fast,0)
+    elif sensor.angle() > 2:
+        robot.drive(-slow,0)
+    else:
+        robot.stop()
